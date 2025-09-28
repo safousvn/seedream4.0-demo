@@ -1,16 +1,14 @@
-import os
 import streamlit as st
 import requests
 
-# ------------------------------
-# Streamlit UI
-# ------------------------------
 st.set_page_config(page_title="Seedream 4.0 REST Demo", layout="centered")
 st.title("🎨 BytePlus Seedream 4.0 Demo (REST API)")
 
 st.write("Generate images using Seedream 4.0 by uploading reference images and writing a prompt.")
 
-# User inputs
+# ------------------------------
+# User Inputs
+# ------------------------------
 prompt = st.text_area("Prompt", "Replace the clothing in image 1 with the outfit from image 2.")
 
 image1_url = st.text_input(
@@ -25,32 +23,34 @@ image2_url = st.text_input(
 size_option = st.selectbox("Image Size", ["1K", "2K", "4K"])
 watermark = st.checkbox("Add Watermark", value=True)
 
-# Generate button
-# ark_api_key = os.environ.get("ARK_API_KEY")
+# ------------------------------
+# Generate Button
+# ------------------------------
 if st.button("Generate Image"):
-    ark_api_key = st.secrets["ARK_API_KEY"]
+    ark_api_key = st.secrets["ARK_API_KEY"]  # Use Streamlit Secrets
     if not ark_api_key:
-        st.error("API Key not found. Please set ARK_API_KEY environment variable.")
+        st.error("API Key not found. Please add ARK_API_KEY to Streamlit Secrets.")
     else:
+        url = "https://ark.ap-southeast.bytepluses.com/api/v3/images"  # Correct REST endpoint
+        headers = {
+            "Authorization": f"Bearer {ark_api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": "seedream-4-0-250828",
+            "prompt": prompt,
+            "image": [image1_url, image2_url],
+            "size": size_option,
+            "sequential_image_generation": "disabled",
+            "response_format": "url",
+            "watermark": watermark
+        }
+
         with st.spinner("Generating image..."):
-            url = "https://ark.ap-southeast.bytepluses.com/api/v3/images/generate"
-            headers = {
-                "Authorization": f"Bearer {ark_api_key}",
-                "Content-Type": "application/json",
-            }
-            payload = {
-                "model": "seedream-4-0-250828",
-                "prompt": prompt,
-                "image": [image1_url, image2_url],
-                "size": size_option,
-                "sequential_image_generation": "disabled",
-                "response_format": "url",
-                "watermark": watermark,
-            }
             try:
-                response = requests.post(url, json=payload, headers=headers)
-                response.raise_for_status()
-                data = response.json()
+                resp = requests.post(url, json=payload, headers=headers)
+                resp.raise_for_status()
+                data = resp.json()
 
                 if "data" in data and len(data["data"]) > 0:
                     st.success("✅ Image generated successfully!")
