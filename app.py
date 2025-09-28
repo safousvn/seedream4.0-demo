@@ -26,8 +26,9 @@ size_option = st.selectbox("Image Size", ["1K", "2K", "4K"])
 watermark = st.checkbox("Add Watermark", value=True)
 
 # Generate button
+# ark_api_key = os.environ.get("ARK_API_KEY")
 if st.button("Generate Image"):
-    ark_api_key = os.environ.get("ARK_API_KEY")
+    ark_api_key = st.secrets["ARK_API_KEY"]
     if not ark_api_key:
         st.error("API Key not found. Please set ARK_API_KEY environment variable.")
     else:
