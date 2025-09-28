@@ -31,7 +31,7 @@ if st.button("Generate Image"):
     if not ark_api_key:
         st.error("API Key not found. Please add ARK_API_KEY to Streamlit Secrets.")
     else:
-        url = "https://ark.ap-southeast.bytepluses.com/api/v3/images"  # Correct REST endpoint
+        url = "https://ark.ap-southeast.bytepluses.com/api/v3/images/generations"  # Correct REST endpoint
         headers = {
             "Authorization": f"Bearer {ark_api_key}",
             "Content-Type": "application/json",
